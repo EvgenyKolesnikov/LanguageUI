@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Security
 
 class AuthorizeViewController: UIViewController {
     
@@ -13,6 +14,10 @@ class AuthorizeViewController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var confirmPasswordTextField: UITextField!
+    
+    @IBOutlet weak var emailField: UITextField!
+    @IBOutlet weak var passwordField: UITextField!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,25 +81,99 @@ class AuthorizeViewController: UIViewController {
         present(alert, animated: true)
     }
     
+    // MARK: - Keychain helpers
+    private func saveTokenToKeychain(token: String) {
+        let tokenData = token.data(using: .utf8)!
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: "jwtToken",
+            kSecValueData as String: tokenData
+        ]
+        SecItemDelete(query as CFDictionary) // Remove old token if exists
+        SecItemAdd(query as CFDictionary, nil)
+    }
+
+    private func getTokenFromKeychain() -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: "jwtToken",
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+        if status == errSecSuccess, let data = dataTypeRef as? Data {
+            return String(data: data, encoding: .utf8)
+        }
+        return nil
+    }
 
     @IBAction func signInButton(_ sender: Any) {
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let mainVC = storyboard.instantiateViewController(withIdentifier: "MainVC")
-        let navController = UINavigationController(rootViewController: mainVC) // <- Важно!
-
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
+        guard let email = emailField?.text, !email.isEmpty,
+              let password = passwordField?.text, !password.isEmpty else {
+            showAlert(message: "Введите email и пароль")
             return
         }
+        // Формируем URL с query параметрами
+        var components = URLComponents(string: "\(API.baseURL)/api/Authorize/Login")!
+        components.queryItems = [
+            URLQueryItem(name: "email", value: email),
+            URLQueryItem(name: "password", value: password)
+        ]
+        guard let url = components.url else {
+            showAlert(message: "Некорректный URL")
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 5
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    self.showAlert(message: "Нет ответа от сервера")
+                    return
+                }
+                if let error = error {
+                    self.showAlert(message: error.localizedDescription)
+                    return
+                }
+                
+                if httpResponse.statusCode == 401 {
+                    if let data = data, let serverMessage = String(data: data, encoding: .utf8), !serverMessage.isEmpty {
+                        self.showAlert(message: "Неверный email или пароль")
+                    }
+                }
+                // Парсим jwt токен из ответа
+                guard let data = data,
+                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let token = json["token"] as? String else {
+                    self.showAlert(message: "Не удалось получить токен")
+                    return
+                }
+                // Сохраняем токен в Keychain
+                self.saveTokenToKeychain(token: token)
+                
+                // переход в главное меню
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        let mainVC = storyboard.instantiateViewController(withIdentifier: "MainVC")
+                        let navController = UINavigationController(rootViewController: mainVC) // <- Важно!
 
-        UIView.transition(with: window,
-                         duration: 0.3,
-                         options: .transitionCrossDissolve,
-                         animations: {
-                            window.rootViewController = navController // Используем navController вместо mainVC
-                         },
-                         completion: nil)
+                        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                              let window = windowScene.windows.first else {
+                            return
+                        }
+
+                        UIView.transition(with: window,
+                                         duration: 0.3,
+                                         options: .transitionCrossDissolve,
+                                         animations: {
+                                            window.rootViewController = navController // Используем navController вместо mainVC
+                                         },
+                                         completion: nil)
+                // Здесь можно сделать переход на главный экран, если нужно
+            }
+        }
+        task.resume()
     }
     
 }
