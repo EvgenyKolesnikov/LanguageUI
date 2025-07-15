@@ -48,7 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func checkTokenAndNavigate() {
-        guard let token = getTokenFromKeychain() else {
+        guard let token = AuthManager.shared.getTokenFromKeychain() else {
             // Токена нет - переходим на экран авторизации
             navigateToAuthScreen()
             return

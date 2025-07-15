@@ -16,11 +16,22 @@ class NotConnectionViewController: UIViewController {
     }
     
 
-    @IBAction func notConnectionButton(_ sender: Any)
-    {
+    @IBAction func notConnectionButton(_ sender: Any) {
+        Task { @MainActor in
+            let token = AuthManager.shared.getTokenFromKeychain()!
+            let validateCode = await AuthManager.shared.validateToken(token: token)
             
-        
-        
+            
+            switch validateCode {
+            case 200:
+                AppRouter.shared.navigateToMainMenuVC()
+            case 401:
+                // Токен невалидный - удаляем его и переходим на экран авторизации
+                AppRouter.shared.navigateToAuthVC()
+            default:
+                break;
+            }
+        }
     }
    
 

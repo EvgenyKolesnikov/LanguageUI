@@ -109,8 +109,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Попробовать еще раз"/>
                                 <connections>
-                                    <action selector="notConnectionButton:" destination="H0s-wp-Ip7" eventType="touchUpInside" id="TGZ-rZ-a13"/>
-                                    <action selector="tryAgainButton:" destination="H0s-wp-Ip7" eventType="touchUpInside" id="ELb-GM-75E"/>
+                                    <action selector="notConnectionButton:" destination="H0s-wp-Ip7" eventType="touchUpInside" id="fOg-AU-sOH"/>
                                 </connections>
                             </button>
                         </subviews>
