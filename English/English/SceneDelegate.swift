@@ -61,6 +61,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.timeoutInterval = 5
         
+        
+    //    AppRouter.shared.navigateToVc(vc: "")
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             DispatchQueue.main.async {
                 if let error = error {

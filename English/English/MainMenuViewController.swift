@@ -34,8 +34,7 @@ class MainMenuViewController: UIViewController {
     }
     
     private func navigateToAuthScreen() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let authVC = storyboard.instantiateViewController(withIdentifier: "AuthVC")
+        let authVC = AppRouter.shared.navigateToVc(vc: "AuthVC")
         
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else {

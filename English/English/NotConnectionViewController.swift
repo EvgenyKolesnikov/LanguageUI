@@ -16,7 +16,11 @@ class NotConnectionViewController: UIViewController {
     }
     
 
-    @IBAction func notConnectionButton(_ sender: Any) {
+    @IBAction func notConnectionButton(_ sender: Any)
+    {
+            
+        
+        
     }
    
 
