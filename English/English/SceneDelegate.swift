@@ -6,17 +6,17 @@
 //
 
 import UIKit
+import Security
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        // Проверяем токен при запуске
+        checkTokenAndNavigate()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -45,6 +45,100 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+    }
+
+    private func checkTokenAndNavigate() {
+        guard let token = getTokenFromKeychain() else {
+            // Токена нет - переходим на экран авторизации
+            navigateToAuthScreen()
+            return
+        }
+        
+        // Проверяем валидность токена
+        let url = URL(string: "\(API.baseURL)/api/Authorize/CheckToken")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.timeoutInterval = 5
+        
+        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    // Нет ответа от сервера - переходим на NotConnectionVC
+                    self?.navigateToNotConnectionVC()
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    // Нет ответа от сервера - переходим на NotConnectionVC
+                    self?.navigateToNotConnectionVC()
+                    return
+                }
+                
+                switch httpResponse.statusCode {
+                case 200:
+                    // Токен валидный - переходим на главный экран
+                    self?.navigateToMainVC()
+                case 401:
+                    // Токен невалидный - удаляем его и переходим на экран авторизации
+                    self?.removeTokenFromKeychain()
+                    self?.navigateToAuthScreen()
+                default:
+                    // Другие ошибки - переходим на NotConnectionVC
+                    self?.navigateToNotConnectionVC()
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    private func navigateToMainVC() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let mainVC = storyboard.instantiateViewController(withIdentifier: "MainVC")
+        let navController = UINavigationController(rootViewController: mainVC)
+        
+        window?.rootViewController = navController
+        window?.makeKeyAndVisible()
+    }
+    
+    private func navigateToNotConnectionVC() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let notConnectionVC = storyboard.instantiateViewController(withIdentifier: "NotConnectionVC")
+        
+        window?.rootViewController = notConnectionVC
+        window?.makeKeyAndVisible()
+    }
+    
+    private func navigateToAuthScreen() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let authVC = storyboard.instantiateViewController(withIdentifier: "AuthVC")
+        
+        window?.rootViewController = authVC
+        window?.makeKeyAndVisible()
+    }
+    
+    // MARK: - Keychain helpers
+    private func getTokenFromKeychain() -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: "jwtToken",
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+        if status == errSecSuccess, let data = dataTypeRef as? Data {
+            return String(data: data, encoding: .utf8)
+        }
+        return nil
+    }
+    
+    private func removeTokenFromKeychain() {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: "jwtToken"
+        ]
+        SecItemDelete(query as CFDictionary)
     }
 
 

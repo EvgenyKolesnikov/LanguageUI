@@ -84,7 +84,7 @@
         <!--Not Connection View Controller-->
         <scene sceneID="g7M-y8-xAM">
             <objects>
-                <viewController storyboardIdentifier="NotConnectionVc" id="H0s-wp-Ip7" customClass="NotConnectionViewController" customModule="English" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NotConnectionVC" id="H0s-wp-Ip7" customClass="NotConnectionViewController" customModule="English" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="j2J-kZ-WKw">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -109,6 +109,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Попробовать еще раз"/>
                                 <connections>
+                                    <action selector="notConnectionButton:" destination="H0s-wp-Ip7" eventType="touchUpInside" id="TGZ-rZ-a13"/>
                                     <action selector="tryAgainButton:" destination="H0s-wp-Ip7" eventType="touchUpInside" id="ELb-GM-75E"/>
                                 </connections>
                             </button>
