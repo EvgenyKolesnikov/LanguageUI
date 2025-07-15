@@ -11,7 +11,7 @@
         <!--Authorize View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="AuthorizeViewController" customModule="English" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AuthVC" id="BYZ-38-t0r" customClass="AuthorizeViewController" customModule="English" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -80,6 +80,46 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3888.4057971014495" y="-37.5"/>
+        </scene>
+        <!--Not Connection View Controller-->
+        <scene sceneID="g7M-y8-xAM">
+            <objects>
+                <viewController storyboardIdentifier="NotConnectionVc" id="H0s-wp-Ip7" customClass="NotConnectionViewController" customModule="English" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="j2J-kZ-WKw">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Нет соединения" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hZZ-Kn-iOW">
+                                <rect key="frame" x="131" y="332" width="130" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Проверьте, подключенно ли устройство к Интернету." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AyK-FO-gXf">
+                                <rect key="frame" x="42" y="376" width="309" height="60"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6v-nT-uoE">
+                                <rect key="frame" x="97" y="465" width="199" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Попробовать еще раз"/>
+                                <connections>
+                                    <action selector="tryAgainButton:" destination="H0s-wp-Ip7" eventType="touchUpInside" id="ELb-GM-75E"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="oGY-tM-FLc"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="i88-og-7ah" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2982.608695652174" y="694.41964285714278"/>
         </scene>
         <!--Authorize View Controller-->
         <scene sceneID="Piy-b0-PNo">
@@ -182,10 +222,10 @@
             </objects>
             <point key="canvasLocation" x="7228.985507246377" y="-38.169642857142854"/>
         </scene>
-        <!--View Controller-->
+        <!--Main Menu View Controller-->
         <scene sceneID="5RE-V3-tUe">
             <objects>
-                <viewController storyboardIdentifier="MainVC" id="SgX-yC-IfU" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MainVC" id="SgX-yC-IfU" customClass="MainMenuViewController" customModule="English" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="9N8-ZY-SJB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -211,17 +251,26 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Профиль"/>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wdm-RA-6Gi">
-                                <rect key="frame" x="167" y="657" width="81" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Начать"/>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="dti-uF-6O5"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="iIF-xi-qoj"/>
+                    <navigationItem key="navigationItem" id="iIF-xi-qoj">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="Ugs-ah-JjV">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Wdm-RA-6Gi">
+                                <rect key="frame" x="20" y="4.5" width="85" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Log Out"/>
+                                <connections>
+                                    <action selector="logOutButton:" destination="SgX-yC-IfU" eventType="touchUpInside" id="wxu-34-jjO"/>
+                                </connections>
+                            </button>
+                            <connections>
+                                <action selector="logOutButton:" destination="SgX-yC-IfU" id="nkG-Wv-Dze"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XrI-Vz-Ju6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
