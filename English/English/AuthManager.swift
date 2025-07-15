@@ -29,7 +29,6 @@ class AuthManager {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.timeoutInterval = 5
         
         do {
             let (_, response) = try await URLSession.shared.data(for: request)

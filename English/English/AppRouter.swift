@@ -37,6 +37,27 @@ class AppRouter {
                                  completion: nil)
     }
     
+    func navigateToNotConnectionVC() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let notConnectionVC = storyboard.instantiateViewController(withIdentifier: "NotConnectionVC")
+        
+        window?.rootViewController = notConnectionVC
+        window?.makeKeyAndVisible()
+        
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            return
+        }
+        
+        UIView.transition(with: window,
+                         duration: 0.3,
+                         options: .transitionCrossDissolve,
+                         animations: {
+                            window.rootViewController = notConnectionVC // Используем navController вместо mainVC
+                         },
+                         completion: nil)
+    }
+    
     func navigateToAuthVC() {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let authVC = storyboard.instantiateViewController(withIdentifier: "AuthVC")
@@ -44,7 +65,18 @@ class AppRouter {
             window?.rootViewController = authVC
             window?.makeKeyAndVisible()
         
-        
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else {
+                return
+            }
+            
+            UIView.transition(with: window,
+                             duration: 0.3,
+                             options: .transitionCrossDissolve,
+                             animations: {
+                                window.rootViewController = authVC // Используем navController вместо mainVC
+                             },
+                             completion: nil)
         }
     
 }

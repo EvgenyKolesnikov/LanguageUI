@@ -67,7 +67,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             DispatchQueue.main.async {
                 if let error = error {
                     // Нет ответа от сервера - переходим на NotConnectionVC
-                    self?.navigateToNotConnectionVC()
+                    AppRouter.shared.navigateToNotConnectionVC()
                     return
                 }
                 

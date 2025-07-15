@@ -126,11 +126,11 @@ class AuthorizeViewController: UIViewController {
         }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.timeoutInterval = 5
+        request.timeoutInterval = 2
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    self.showAlert(message: "Нет ответа от сервера")
+                    AppRouter.shared.navigateToNotConnectionVC()
                     return
                 }
                 if let error = error {

@@ -18,7 +18,7 @@ class NotConnectionViewController: UIViewController {
 
     @IBAction func notConnectionButton(_ sender: Any) {
         Task { @MainActor in
-            let token = AuthManager.shared.getTokenFromKeychain()!
+            let token = AuthManager.shared.getTokenFromKeychain() ?? ""  
             let validateCode = await AuthManager.shared.validateToken(token: token)
             
             
