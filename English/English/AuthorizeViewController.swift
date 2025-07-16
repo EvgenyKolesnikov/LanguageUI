@@ -24,8 +24,6 @@ class AuthorizeViewController: UIViewController {
       
         // Do any additional setup after loading the view.
     }
-
-    
     
     @IBAction func registerButton(_ sender: Any) {
         guard let name = nameTextField.text, !name.isEmpty,
