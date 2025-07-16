@@ -95,6 +95,7 @@ class AuthorizeViewController: UIViewController {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.timeoutInterval = 3
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {

@@ -59,7 +59,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
+        request.timeoutInterval = 3
         
     //    AppRouter.shared.navigateToVc(vc: "")
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
