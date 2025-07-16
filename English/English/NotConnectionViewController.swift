@@ -28,6 +28,7 @@ class NotConnectionViewController: UIViewController {
 
             case 401:
                 // Токен невалидный - удаляем его и переходим на экран авторизации
+                AuthManager.shared.removeTokenFromKeychain()
                 AppRouter.shared.navigateToVc(vc: .AuthVc)
             default:
                 break;

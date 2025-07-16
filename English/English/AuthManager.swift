@@ -31,6 +31,13 @@ class AuthManager {
         SecItemAdd(query as CFDictionary, nil)
     }
     
+    func removeTokenFromKeychain() {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: "jwtToken"
+        ]
+        SecItemDelete(query as CFDictionary)
+    }
     
     
     func validateToken(token: String) async -> Int? {

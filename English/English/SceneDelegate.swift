@@ -50,7 +50,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func checkTokenAndNavigate() {
         guard let token = AuthManager.shared.getTokenFromKeychain() else {
             // Токена нет - переходим на экран авторизации
-            navigateToAuthScreen()
+            AppRouter.shared.navigateToVc(vc: .AuthVc)
             return
         }
         
@@ -64,7 +64,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     //    AppRouter.shared.navigateToVc(vc: "")
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             DispatchQueue.main.async {
-                if let error = error {
+                if error != nil {
                     // Нет ответа от сервера - переходим на NotConnectionVC
                     // AppRouter.shared.navigateToNotConnectionVC()
                     AppRouter.shared.navigateToVc(vc: .NotConnectionVc)
@@ -85,8 +85,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     AppRouter.shared.navigateToMainMenuVC()
                 case 401:
                     // Токен невалидный - удаляем его и переходим на экран авторизации
-                    self?.removeTokenFromKeychain()
-                   // self?.navigateToAuthScreen()
+                    AuthManager.shared.removeTokenFromKeychain()
                     AppRouter.shared.navigateToVc(vc: .AuthVc)
                 default:
                     // Другие ошибки - переходим на NotConnectionVC
@@ -97,56 +96,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         task.resume()
     }
-    
-    private func navigateToMainVC() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let mainVC = storyboard.instantiateViewController(withIdentifier: "MainVC")
-        let navController = UINavigationController(rootViewController: mainVC)
-        
-        window?.rootViewController = navController
-        window?.makeKeyAndVisible()
-    }
-    
-    private func navigateToNotConnectionVC() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let notConnectionVC = storyboard.instantiateViewController(withIdentifier: "NotConnectionVC")
-        
-        window?.rootViewController = notConnectionVC
-        window?.makeKeyAndVisible()
-    }
-    
-    private func navigateToAuthScreen() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let authVC = storyboard.instantiateViewController(withIdentifier: "AuthVC")
-        
-        window?.rootViewController = authVC
-        window?.makeKeyAndVisible()
-    }
-    
-    // MARK: - Keychain helpers
-    private func getTokenFromKeychain() -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "jwtToken",
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        var dataTypeRef: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
-        if status == errSecSuccess, let data = dataTypeRef as? Data {
-            return String(data: data, encoding: .utf8)
-        }
-        return nil
-    }
-    
-    private func removeTokenFromKeychain() {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "jwtToken"
-        ]
-        SecItemDelete(query as CFDictionary)
-    }
-
-
 }
 

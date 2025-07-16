@@ -25,8 +25,8 @@ class ProfileViewController: UIViewController {
                 EmailField.text = profile.email
             } catch {
                 // Покажите ошибку пользователю или залогируйте
-                NameField.text = "Ошибка"
-                EmailField.text = error.localizedDescription
+                NameField.text = ""
+                EmailField.text = ""
             }
         }
     }
