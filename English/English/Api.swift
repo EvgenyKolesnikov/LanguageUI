@@ -10,3 +10,4 @@ import Foundation
 enum API {
     static let baseURL = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String ?? "https://default.api"
 }
+

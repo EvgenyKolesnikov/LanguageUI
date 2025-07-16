@@ -4,45 +4,19 @@ class AppRouter {
     static let shared = AppRouter()
     private weak var window: UIWindow?
     
+    enum ViewControllers: String{
+        case AuthVc = "AuthVC"
+        case NotConnectionVc = "NotConnectionVC"
+    }
+    
     func setWindow(_ window: UIWindow?) {
         self.window = window
+        navigateToVc(vc: .AuthVc)
     }
     
-    func navigateToVc(vc: String) -> UIViewController {
+    func navigateToVc(vc: ViewControllers) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let VC = storyboard.instantiateViewController(withIdentifier: vc)
-        
-        window?.rootViewController = VC
-        window?.makeKeyAndVisible()
-
-        return VC
-    }
-    
-    func navigateToMainMenuVC() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let mainVC = storyboard.instantiateViewController(withIdentifier: "MainVC")
-                let navController = UINavigationController(rootViewController: mainVC) // <- Важно!
-
-                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                      let window = windowScene.windows.first else {
-                    return
-                }
-
-                UIView.transition(with: window,
-                                 duration: 0.3,
-                                 options: .transitionCrossDissolve,
-                                 animations: {
-                                    window.rootViewController = navController // Используем navController вместо mainVC
-                                 },
-                                 completion: nil)
-    }
-    
-    func navigateToNotConnectionVC() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let notConnectionVC = storyboard.instantiateViewController(withIdentifier: "NotConnectionVC")
-        
-        window?.rootViewController = notConnectionVC
-        window?.makeKeyAndVisible()
+        let VC = storyboard.instantiateViewController(withIdentifier: vc.rawValue)
         
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else {
@@ -53,17 +27,51 @@ class AppRouter {
                          duration: 0.3,
                          options: .transitionCrossDissolve,
                          animations: {
-                            window.rootViewController = notConnectionVC // Используем navController вместо mainVC
-                         },
+                             window.rootViewController = VC
+                          },
+                         completion: nil)
+    }
+    
+    func navigateToMainMenuVC() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let mainVC = storyboard.instantiateViewController(withIdentifier: "MainMenuVC")
+        let navController = UINavigationController(rootViewController: mainVC) // <- Важно!
+
+                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                      let window = windowScene.windows.first else {
+                    return
+                }
+
+        UIView.transition(with: window,
+                        duration: 0.3,
+                        options: .transitionCrossDissolve,
+                        animations: {
+                            window.rootViewController = navController // Используем navController вместо mainVC
+                        },
+                        completion: nil)
+    }
+    
+    func navigateToNotConnectionVC() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let VC = storyboard.instantiateViewController(withIdentifier: "NotConnectionVC")
+        
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            return
+        }
+        
+        UIView.transition(with: window,
+                         duration: 0.3,
+                         options: .transitionCrossDissolve,
+                         animations: {
+                             window.rootViewController = VC
+                          },
                          completion: nil)
     }
     
     func navigateToAuthVC() {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let authVC = storyboard.instantiateViewController(withIdentifier: "AuthVC")
-            
-            window?.rootViewController = authVC
-            window?.makeKeyAndVisible()
+            let VC = storyboard.instantiateViewController(withIdentifier: "AuthVC")
         
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first else {
@@ -74,7 +82,7 @@ class AppRouter {
                              duration: 0.3,
                              options: .transitionCrossDissolve,
                              animations: {
-                                window.rootViewController = authVC // Используем navController вместо mainVC
+                                window.rootViewController = VC
                              },
                              completion: nil)
         }

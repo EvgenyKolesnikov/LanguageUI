@@ -20,8 +20,21 @@ class AuthManager {
         return nil
     }
     
+    func saveTokenToKeychain(token: String) {
+        let tokenData = token.data(using: .utf8)!
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: "jwtToken",
+            kSecValueData as String: tokenData
+        ]
+        SecItemDelete(query as CFDictionary) // Remove old token if exists
+        SecItemAdd(query as CFDictionary, nil)
+    }
+    
+    
     
     func validateToken(token: String) async -> Int? {
+        
         guard let url = URL(string: "\(API.baseURL)/api/Authorize/CheckToken") else {
             return nil
         }

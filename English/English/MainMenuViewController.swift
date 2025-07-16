@@ -22,7 +22,8 @@ class MainMenuViewController: UIViewController {
         removeTokenFromKeychain()
         
         // Переходим на экран авторизации
-        navigateToAuthScreen()
+       // navigateToAuthScreen()
+        AppRouter.shared.navigateToVc(vc: .AuthVc)
     }
     
     private func removeTokenFromKeychain() {
@@ -34,20 +35,20 @@ class MainMenuViewController: UIViewController {
     }
     
     private func navigateToAuthScreen() {
-        let authVC = AppRouter.shared.navigateToVc(vc: "AuthVC")
-        
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
-            return
-        }
-        
-        UIView.transition(with: window,
-                         duration: 0.3,
-                         options: .transitionCrossDissolve,
-                         animations: {
-                            window.rootViewController = authVC
-                         },
-                         completion: nil)
+       // let authVC = AppRouter.shared.navigateToVc(vc: "AuthVC")
+//
+//        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+//              let window = windowScene.windows.first else {
+//            return
+//        }
+//        
+//        UIView.transition(with: window,
+//                         duration: 0.3,
+//                         options: .transitionCrossDissolve,
+//                         animations: {
+//                            window.rootViewController = authVC
+//                         },
+//                         completion: nil)
     }
     
 

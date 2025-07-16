@@ -44,7 +44,6 @@ class AuthorizeViewController: UIViewController {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 5
         let body: [String: String] = [
             "name": name,
             "email": email,
@@ -80,33 +79,6 @@ class AuthorizeViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
-    
-    // MARK: - Keychain helpers
-    private func saveTokenToKeychain(token: String) {
-        let tokenData = token.data(using: .utf8)!
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "jwtToken",
-            kSecValueData as String: tokenData
-        ]
-        SecItemDelete(query as CFDictionary) // Remove old token if exists
-        SecItemAdd(query as CFDictionary, nil)
-    }
-
-    private func getTokenFromKeychain() -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: "jwtToken",
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        var dataTypeRef: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
-        if status == errSecSuccess, let data = dataTypeRef as? Data {
-            return String(data: data, encoding: .utf8)
-        }
-        return nil
-    }
 
     @IBAction func signInButton(_ sender: Any) {
         guard let email = emailField?.text, !email.isEmpty,
@@ -120,13 +92,12 @@ class AuthorizeViewController: UIViewController {
             URLQueryItem(name: "email", value: email),
             URLQueryItem(name: "password", value: password)
         ]
-        guard let url = components.url else {
-            showAlert(message: "Некорректный URL")
-            return
-        }
+        let url = components.url!
+
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.timeoutInterval = 2
+
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard let httpResponse = response as? HTTPURLResponse else {
@@ -150,27 +121,9 @@ class AuthorizeViewController: UIViewController {
                     self.showAlert(message: "Не удалось получить токен")
                     return
                 }
-                // Сохраняем токен в Keychain
-                self.saveTokenToKeychain(token: token)
                 
-                // переход в главное меню
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                        let mainVC = storyboard.instantiateViewController(withIdentifier: "MainVC")
-                        let navController = UINavigationController(rootViewController: mainVC) // <- Важно!
-
-                        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                              let window = windowScene.windows.first else {
-                            return
-                        }
-
-                        UIView.transition(with: window,
-                                         duration: 0.3,
-                                         options: .transitionCrossDissolve,
-                                         animations: {
-                                            window.rootViewController = navController // Используем navController вместо mainVC
-                                         },
-                                         completion: nil)
-                // Здесь можно сделать переход на главный экран, если нужно
+                AuthManager.shared.saveTokenToKeychain(token: token)
+                AppRouter.shared.navigateToMainMenuVC()
             }
         }
         task.resume()

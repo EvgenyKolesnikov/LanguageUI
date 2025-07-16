@@ -25,9 +25,11 @@ class NotConnectionViewController: UIViewController {
             switch validateCode {
             case 200:
                 AppRouter.shared.navigateToMainMenuVC()
+            //    AppRouter.shared.navigateToVc(vc: .MainMenuVc)
             case 401:
                 // Токен невалидный - удаляем его и переходим на экран авторизации
-                AppRouter.shared.navigateToAuthVC()
+            //    AppRouter.shared.navigateToAuthVC()
+                AppRouter.shared.navigateToVc(vc: .AuthVc)
             default:
                 break;
             }

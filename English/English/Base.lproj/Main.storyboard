@@ -225,7 +225,7 @@
         <!--Main Menu View Controller-->
         <scene sceneID="5RE-V3-tUe">
             <objects>
-                <viewController storyboardIdentifier="MainVC" id="SgX-yC-IfU" customClass="MainMenuViewController" customModule="English" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MainMenuVC" id="SgX-yC-IfU" customClass="MainMenuViewController" customModule="English" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="9N8-ZY-SJB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

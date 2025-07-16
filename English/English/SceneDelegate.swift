@@ -59,7 +59,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.timeoutInterval = 5
         
         
     //    AppRouter.shared.navigateToVc(vc: "")
@@ -67,27 +66,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             DispatchQueue.main.async {
                 if let error = error {
                     // Нет ответа от сервера - переходим на NotConnectionVC
-                    AppRouter.shared.navigateToNotConnectionVC()
+                    // AppRouter.shared.navigateToNotConnectionVC()
+                    AppRouter.shared.navigateToVc(vc: .NotConnectionVc)
                     return
                 }
                 
                 guard let httpResponse = response as? HTTPURLResponse else {
                     // Нет ответа от сервера - переходим на NotConnectionVC
-                    self?.navigateToNotConnectionVC()
+                  //  self?.navigateToNotConnectionVC()
+                    AppRouter.shared.navigateToVc(vc: .NotConnectionVc)
                     return
                 }
                 
                 switch httpResponse.statusCode {
                 case 200:
                     // Токен валидный - переходим на главный экран
-                    self?.navigateToMainVC()
+                    // self?.navigateToMainVC()
+                    AppRouter.shared.navigateToMainMenuVC()
                 case 401:
                     // Токен невалидный - удаляем его и переходим на экран авторизации
                     self?.removeTokenFromKeychain()
-                    self?.navigateToAuthScreen()
+                   // self?.navigateToAuthScreen()
+                    AppRouter.shared.navigateToVc(vc: .AuthVc)
                 default:
                     // Другие ошибки - переходим на NotConnectionVC
-                    self?.navigateToNotConnectionVC()
+                  //  self?.navigateToNotConnectionVC()
+                    AppRouter.shared.navigateToVc(vc: .NotConnectionVc)
                 }
             }
         }
