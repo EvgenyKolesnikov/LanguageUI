@@ -99,7 +99,7 @@ class AuthorizeViewController: UIViewController {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    AppRouter.shared.navigateToNotConnectionVC()
+                    AppRouter.shared.navigateToVc(vc: .NotConnectionVc)
                     return
                 }
                 if let error = error {

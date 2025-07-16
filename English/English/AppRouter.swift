@@ -50,41 +50,4 @@ class AppRouter {
                         },
                         completion: nil)
     }
-    
-    func navigateToNotConnectionVC() {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let VC = storyboard.instantiateViewController(withIdentifier: "NotConnectionVC")
-        
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
-            return
-        }
-        
-        UIView.transition(with: window,
-                         duration: 0.3,
-                         options: .transitionCrossDissolve,
-                         animations: {
-                             window.rootViewController = VC
-                          },
-                         completion: nil)
-    }
-    
-    func navigateToAuthVC() {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let VC = storyboard.instantiateViewController(withIdentifier: "AuthVC")
-        
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first else {
-                return
-            }
-            
-            UIView.transition(with: window,
-                             duration: 0.3,
-                             options: .transitionCrossDissolve,
-                             animations: {
-                                window.rootViewController = VC
-                             },
-                             completion: nil)
-        }
-    
 }
