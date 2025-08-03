@@ -26,6 +26,11 @@ class MainMenuViewController: UIViewController {
         AppRouter.shared.navigateToVc(vc: .AuthVc)
     }
     
+    @IBAction func dictionaryButton(_ sender: Any) {
+        let dictionaryVC = UserDictionaryViewController()
+        navigationController?.pushViewController(dictionaryVC, animated: true)
+    }
+    
     private func removeTokenFromKeychain() {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
