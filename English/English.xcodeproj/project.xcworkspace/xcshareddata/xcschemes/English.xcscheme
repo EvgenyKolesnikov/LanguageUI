@@ -18,7 +18,7 @@
                BlueprintIdentifier = "B1E3A2CB2E21D979007991C5"
                BuildableName = "English.app"
                BlueprintName = "English"
-               ReferencedContainer = "container:English.xcodeproj">
+               ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -38,7 +38,7 @@
                BlueprintIdentifier = "B1E3A2E12E21D97A007991C5"
                BuildableName = "EnglishTests.xctest"
                BlueprintName = "EnglishTests"
-               ReferencedContainer = "container:English.xcodeproj">
+               ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -49,13 +49,13 @@
                BlueprintIdentifier = "B1E3A2EB2E21D97A007991C5"
                BuildableName = "EnglishUITests.xctest"
                BlueprintName = "EnglishUITests"
-               ReferencedContainer = "container:English.xcodeproj">
+               ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = ""
       selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
@@ -71,7 +71,7 @@
             BlueprintIdentifier = "B1E3A2CB2E21D979007991C5"
             BuildableName = "English.app"
             BlueprintName = "English"
-            ReferencedContainer = "container:English.xcodeproj">
+            ReferencedContainer = "container:">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -88,7 +88,7 @@
             BlueprintIdentifier = "B1E3A2CB2E21D979007991C5"
             BuildableName = "English.app"
             BlueprintName = "English"
-            ReferencedContainer = "container:English.xcodeproj">
+            ReferencedContainer = "container:">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

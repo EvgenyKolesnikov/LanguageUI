@@ -25,6 +25,9 @@ class AuthorizeViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    @IBAction func SkipAuth(_ sender: Any) {
+        AppRouter.shared.navigateToMainMenuVC()
+    }
     @IBAction func registerButton(_ sender: Any) {
         guard let name = nameTextField.text, !name.isEmpty,
               let email = emailTextField.text, !email.isEmpty,

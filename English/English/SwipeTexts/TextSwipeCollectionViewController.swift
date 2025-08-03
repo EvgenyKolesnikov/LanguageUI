@@ -2,7 +2,9 @@ import UIKit
 
 class TextSwipeCollectionViewController: UIViewController {
     
-    var textStub = TextStub()
+    private var texts: [String] = []
+    private var translations: [String: String] = [:]
+    private var isLoading = false
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -22,6 +24,7 @@ class TextSwipeCollectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
+        loadTexts()
     }
     
     private func setupViews() {
@@ -34,17 +37,50 @@ class TextSwipeCollectionViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
+    
+    private func loadTexts() {
+        guard !isLoading else { return }
+        isLoading = true
+        
+        Task {
+            do {
+                let textModels = try await TextService.shared.fetchTexts()
+                let legacyData = TextService.shared.convertToLegacyFormat(textModels)
+                
+                await MainActor.run {
+                    self.texts = legacyData.texts
+                    self.translations = legacyData.translations
+                    self.collectionView.reloadData()
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.showError(message: "Ошибка загрузки текстов: \(error.localizedDescription)")
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { _ in
+            self.loadTexts()
+        })
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+        present(alert, animated: true)
+    }
 }
 
 extension TextSwipeCollectionViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return textStub.texts.count
+        return texts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TextCell", for: indexPath) as! TextCell
-        cell.configure(with: textStub.texts[indexPath.item], translations: textStub.translations)
+        cell.configure(with: texts[indexPath.item], translations: translations)
         return cell
     }
     
