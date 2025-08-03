@@ -16,7 +16,7 @@ class TextCell: UICollectionViewCell {
         textView.backgroundColor = .clear
         textView.textAlignment = .center
         textView.font = UIFont.systemFont(ofSize: 25)
-        textView.textColor = UIColor.black
+        textView.textColor = UIColor.label
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()
