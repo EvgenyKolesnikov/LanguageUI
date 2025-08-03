@@ -66,6 +66,20 @@ class TextCell: UICollectionViewCell {
         return button
     }()
     
+    private lazy var addToDictionaryButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("+", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        button.setTitleColor(UIColor.systemBlue, for: .normal)
+        button.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.1)
+        button.layer.cornerRadius = 16
+        button.addTarget(self, action: #selector(addWordToDictionary), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private var currentWord: String = ""
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -88,6 +102,7 @@ class TextCell: UICollectionViewCell {
         translationPopup.addSubview(wordLabel)
         translationPopup.addSubview(translationLabel)
         translationPopup.addSubview(closeButton)
+        translationPopup.addSubview(addToDictionaryButton)
         
         NSLayoutConstraint.activate([
             textView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -101,7 +116,13 @@ class TextCell: UICollectionViewCell {
             translationPopup.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -80),
             translationPopup.heightAnchor.constraint(greaterThanOrEqualToConstant: 80),
             
-            // Кнопка закрытия
+            // Кнопка добавления в словарь - в левом верхнем углу
+            addToDictionaryButton.topAnchor.constraint(equalTo: translationPopup.topAnchor, constant: 16),
+            addToDictionaryButton.leadingAnchor.constraint(equalTo: translationPopup.leadingAnchor, constant: 16),
+            addToDictionaryButton.widthAnchor.constraint(equalToConstant: 32),
+            addToDictionaryButton.heightAnchor.constraint(equalToConstant: 32),
+            
+            // Кнопка закрытия - в правом верхнем углу
             closeButton.topAnchor.constraint(equalTo: translationPopup.topAnchor, constant: 16),
             closeButton.trailingAnchor.constraint(equalTo: translationPopup.trailingAnchor, constant: -16),
             closeButton.widthAnchor.constraint(equalToConstant: 32),
@@ -110,7 +131,7 @@ class TextCell: UICollectionViewCell {
             // Слово - центрируем в popup
             wordLabel.topAnchor.constraint(equalTo: translationPopup.topAnchor, constant: 16),
             wordLabel.centerXAnchor.constraint(equalTo: translationPopup.centerXAnchor),
-            wordLabel.leadingAnchor.constraint(greaterThanOrEqualTo: translationPopup.leadingAnchor, constant: 16),
+            wordLabel.leadingAnchor.constraint(greaterThanOrEqualTo: addToDictionaryButton.trailingAnchor, constant: 8),
             wordLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -8),
             
             // Перевод - центрируем в popup
@@ -169,6 +190,7 @@ class TextCell: UICollectionViewCell {
         print("🎯 Показываем popup для слова: \(word)")
         print("🎯 Перевод: \(translation)")
         
+        currentWord = word
         wordLabel.text = word
         translationLabel.text = translation
         
@@ -189,5 +211,53 @@ class TextCell: UICollectionViewCell {
         }) { _ in
             print("✅ Анимация popup завершена")
         }
+    }
+    
+    @objc private func addWordToDictionary() {
+        guard !currentWord.isEmpty else { return }
+        
+        // Отправляем слово в словарь пользователя
+        Task {
+            do {
+                try await addWordToUserDictionary(word: currentWord)
+                await MainActor.run {
+                    self.showSuccessMessage()
+                }
+            } catch {
+                await MainActor.run {
+                    self.showErrorMessage(error: error)
+                }
+            }
+        }
+    }
+    
+    private func addWordToUserDictionary(word: String) async throws {
+        guard let url = URL(string: "\(API.baseURL)/api/Profile/UserDictionary?word=\(word.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? word)") else {
+            throw URLError(.badURL)
+        }
+        
+        let token = AuthManager.shared.getTokenFromKeychain() ?? ""
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+    }
+    
+    private func showSuccessMessage() {
+        let alert = UIAlertController(title: "Успешно", message: "Слово '\(currentWord)' добавлено в ваш словарь", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.window?.rootViewController?.present(alert, animated: true)
+    }
+    
+    private func showErrorMessage(error: Error) {
+        let alert = UIAlertController(title: "Ошибка", message: "Не удалось добавить слово в словарь: \(error.localizedDescription)", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.window?.rootViewController?.present(alert, animated: true)
     }
 }
