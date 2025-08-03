@@ -107,15 +107,17 @@ class TextCell: UICollectionViewCell {
             closeButton.widthAnchor.constraint(equalToConstant: 32),
             closeButton.heightAnchor.constraint(equalToConstant: 32),
             
-            // Слово
+            // Слово - центрируем в popup
             wordLabel.topAnchor.constraint(equalTo: translationPopup.topAnchor, constant: 16),
-            wordLabel.leadingAnchor.constraint(equalTo: translationPopup.leadingAnchor, constant: 16),
-            wordLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -8),
+            wordLabel.centerXAnchor.constraint(equalTo: translationPopup.centerXAnchor),
+            wordLabel.leadingAnchor.constraint(greaterThanOrEqualTo: translationPopup.leadingAnchor, constant: 16),
+            wordLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -8),
             
-            // Перевод
+            // Перевод - центрируем в popup
             translationLabel.topAnchor.constraint(equalTo: wordLabel.bottomAnchor, constant: 8),
-            translationLabel.leadingAnchor.constraint(equalTo: translationPopup.leadingAnchor, constant: 16),
-            translationLabel.trailingAnchor.constraint(equalTo: translationPopup.trailingAnchor, constant: -16),
+            translationLabel.centerXAnchor.constraint(equalTo: translationPopup.centerXAnchor),
+            translationLabel.leadingAnchor.constraint(greaterThanOrEqualTo: translationPopup.leadingAnchor, constant: 16),
+            translationLabel.trailingAnchor.constraint(lessThanOrEqualTo: translationPopup.trailingAnchor, constant: -16),
             translationLabel.bottomAnchor.constraint(equalTo: translationPopup.bottomAnchor, constant: -16)
         ])
         
