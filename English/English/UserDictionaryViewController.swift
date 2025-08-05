@@ -9,7 +9,7 @@ import UIKit
 
 class UserDictionaryViewController: UITableViewController {
     
-    private var words: [String: String] = [:]
+    private var words: [UserDictionaryWord] = []
     private var isLoading = false
     
     private lazy var loadingIndicator: UIActivityIndicatorView = {
@@ -29,8 +29,12 @@ class UserDictionaryViewController: UITableViewController {
         title = "Мой словарь"
         view.backgroundColor = UIColor.systemBackground
         
-        // Регистрируем ячейку программно
+        // Регистрируем ячейку
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "WordCell")
+        
+        // Устанавливаем стиль ячеек
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
         
         // Добавляем индикатор загрузки
         view.addSubview(loadingIndicator)
@@ -51,6 +55,11 @@ class UserDictionaryViewController: UITableViewController {
                 let userWords = try await UserDictionaryService.shared.fetchUserDictionary()
                 
                 await MainActor.run {
+                    print("📚 Загружено слов в словарь: \(userWords.count)")
+                    for word in userWords {
+                        print("📝 \(word.word) → \(word.translation ?? "nil")")
+                    }
+                    
                     self.words = userWords
                     self.tableView.reloadData()
                     self.loadingIndicator.stopAnimating()
@@ -59,10 +68,6 @@ class UserDictionaryViewController: UITableViewController {
             } catch {
                 await MainActor.run {
                     print("❌ Ошибка загрузки словаря: \(error)")
-                    if let urlError = error as? URLError {
-                        print("❌ URL Error: \(urlError.localizedDescription)")
-                        print("❌ Error code: \(urlError.code.rawValue)")
-                    }
                     self.showError(message: "Ошибка загрузки словаря: \(error.localizedDescription)")
                     self.loadingIndicator.stopAnimating()
                     self.isLoading = false
@@ -79,6 +84,28 @@ class UserDictionaryViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
         present(alert, animated: true)
     }
+    
+    private func deleteWord(at indexPath: IndexPath) {
+        let word = words[indexPath.row]
+        performDelete(word: word, at: indexPath)
+    }
+    
+    private func performDelete(word: UserDictionaryWord, at indexPath: IndexPath) {
+        Task {
+            do {
+                try await UserDictionaryService.shared.deleteWord(id: word.id)
+                
+                await MainActor.run {
+                    self.words.remove(at: indexPath.row)
+                    self.tableView.deleteRows(at: [indexPath], with: .fade)
+                }
+            } catch {
+                await MainActor.run {
+                    self.showError(message: "Ошибка удаления слова: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -89,23 +116,24 @@ extension UserDictionaryViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Используем ячейку из Storyboard
-        let cell = tableView.dequeueReusableCell(withIdentifier: "WordCell", for: indexPath)
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "WordCell")
         
-        // Получаем слово и перевод по индексу
-        let sortedWords = words.sorted { $0.key < $1.key }
-        let (word, translation) = sortedWords[indexPath.row]
+        let word = words[indexPath.row]
         
-        // Настраиваем ячейку в зависимости от того, как она настроена в Storyboard
-        if let textLabel = cell.textLabel {
-            textLabel.text = word
-        }
-        
-        if let detailTextLabel = cell.detailTextLabel {
-            detailTextLabel.text = translation
-        }
+        cell.textLabel?.text = word.word
+        cell.detailTextLabel?.text = word.translation ?? ""
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            deleteWord(at: indexPath)
+        }
     }
 }
 
@@ -114,12 +142,5 @@ extension UserDictionaryViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        let sortedWords = words.sorted { $0.key < $1.key }
-        let (word, translation) = sortedWords[indexPath.row]
-        
-        let alert = UIAlertController(title: word, message: translation, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 } 
